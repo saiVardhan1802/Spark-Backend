@@ -6,13 +6,15 @@ dotenv.config();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const {authRoutes} = require("./routes/auth");
 
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(errorHandler)
+app.use(errorHandler);
+app.use('/api/auth', authRoutes);
 
 app.get("/", (req, res, next) => {
     try {

@@ -1,5 +1,11 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+
+const linkSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    url: { type: String, required: true }
+});
+
 const userSchema = new Schema({
     firstName: {
         type: String,
@@ -18,6 +24,82 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
+
+    profileTitle: {
+        type: String,
+        required: true,
+    },
+
+    bio: {
+        type: String,
+        required: false,
+    },
+
+    profileImg: {
+        type: String,
+        required: true,
+    },
+
+    links: [linkSchema],
+
+    shops: [linkSchema],
+
+    /*Appearance */
+    Layout: {
+        type: String,
+        required: true,
+        enum: ["Stack", "Grid", "Carousel"],
+        default: "Stack"
+    },
+
+    fill: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+
+    shadow: {
+        type: String,
+        required: true,
+        enum: ["hard", "soft", "none"],
+        default: "none"
+    },
+
+    outline: {
+        type: String,
+        required: true,
+        default: "2rem"
+    },
+
+    buttonColor: {
+        type: String,
+        required: true,
+        default: '#D9D9D9'
+    },
+
+    buttonFontColor: {
+        type: String,
+        required: true,
+        default: "Black"
+    },
+
+    font: {
+        type: String,
+        required: true,
+        default: "Poppins"
+    },
+
+    fontColor: {
+        type: String,
+        required: true,
+        default: "white"
+    },
+
+    Theme: {
+        type: String,
+        required: true,
+        default: "#E0E2D9"
+    }
 
     /*
     createdJobs: {
