@@ -3,6 +3,7 @@ const router = express.Router();
 const userModel = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const authMiddleware = require("../middleware/auth")
 
 router.post("/register", async (req, res, next) => {
     try {
@@ -24,9 +25,10 @@ router.post("/register", async (req, res, next) => {
             name: user.firstName,
         };
         const token = jwt.sign(payload, process.env.SECRET_KEY);
-        res.json({ token, _id, message: "Login successful" }).status(200);
+        res.json({ token, _id: user._id, message: "Login successful" }).status(200);
     }
     catch (err) {
+        console.log(err);
         next(err);
     }
 });
@@ -42,8 +44,8 @@ router.put("/register", async (req, res, next) => {
 
 router.post("/login", async (req, res, next) => {
     try {
-        const { userName, password } = req.body;
-        const user = await userModel.findOne({ userName });
+        const { email, password } = req.body;
+        const user = await userModel.findOne({ email });
         if (!user) {
             return res.status(401).json({ message: "Invalid Credentials" });
         }
@@ -59,8 +61,39 @@ router.post("/login", async (req, res, next) => {
         res.json({ token, message: "Login successful" }).status(200);
     }
     catch (err) {
+        console.log(err)
         next(err);
     }
 });
 
-module.exports = { authRoutes: router };
+router.get("/user", authMiddleware, async (req, res) => {
+    try {
+        const user = await userModel.findById(req.user.id).select("-password");
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+router.put("/user", authMiddleware, async (req, res) => {
+    try {
+        const updates = req.body;
+        const allowedUpdates = [
+            "profileTitle", "profileImg", "bio", "links", "shops", 
+            "layout", "fill", "shadow", "outline", "buttonColor", "buttonFontColor", "font", "fontColor", "Theme"
+        ];
+
+        const updateFields = Object.keys(updates);
+        const isValidOperation = updateFields.every(field => allowedUpdates.includes(field));
+        if (!isValidOperation) return res.status(400).json({ message: "Invalid update fields" });
+
+        const user = await userModel.findByIdAndUpdate(req.user.id, updates, { new: true }).select("-password");
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+module.exports = router;

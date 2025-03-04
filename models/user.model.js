@@ -28,6 +28,7 @@ const userSchema = new Schema({
     profileTitle: {
         type: String,
         required: true,
+        default: "",
     },
 
     bio: {
@@ -38,6 +39,7 @@ const userSchema = new Schema({
     profileImg: {
         type: String,
         required: true,
+        default: "profile.jpg",
     },
 
     links: [linkSchema],
@@ -45,11 +47,11 @@ const userSchema = new Schema({
     shops: [linkSchema],
 
     /*Appearance */
-    Layout: {
+    layout: {
         type: String,
         required: true,
-        enum: ["Stack", "Grid", "Carousel"],
-        default: "Stack"
+        enum: ["stack", "grid", "carousel"],
+        default: "stack"
     },
 
     fill: {
